@@ -86,14 +86,33 @@ func run() {
 					cars[i].Parked = true  // Marca el carro como estacionado
 					setExitTime(&cars[i])  // Establece el tiempo de salida del carro
 				}
-			} else if cars[i].Parked && time.Now().After(cars[i].ExitTime) {
-				cars[i].Position.X -= 2  // mover el carro hacia la salida
-				if cars[i].Position.X <= 0 {
-					laneMutex.Lock()
-					laneStatus[cars[i].Lane] = false  // liberar el carril
-					laneMutex.Unlock()
-					// Remover el carro de la lista
-					cars = append(cars[:i], cars[i+1:]...)
+			}         else if cars[i].Parked && time.Now().After(cars[i].ExitTime) {
+				if cars[i].Lane < 4 {
+					// Para carriles superiores
+					if cars[i].Position.Y > 300 {
+						cars[i].Position.Y -= 2  // Mueve hacia abajo
+					} else if cars[i].Position.X > 0 {
+						cars[i].Position.X -= 2  // Mueve hacia la izquierda
+					} else {
+						laneMutex.Lock()
+						laneStatus[cars[i].Lane] = false  // liberar el carril
+						laneMutex.Unlock()
+						// Remover el carro de la lista
+						cars = append(cars[:i], cars[i+1:]...)
+					}
+				} else {
+					// Para carriles inferiores
+					if cars[i].Position.Y < 300 {
+						cars[i].Position.Y += 2  // Mueve hacia arriba
+					} else if cars[i].Position.X > 0 {
+						cars[i].Position.X -= 2  // Mueve hacia la izquierda
+					} else {
+						laneMutex.Lock()
+						laneStatus[cars[i].Lane] = false  // liberar el carril
+						laneMutex.Unlock()
+						// Remover el carro de la lista
+						cars = append(cars[:i], cars[i+1:]...)
+					}
 				}
 			}
 		}
@@ -101,6 +120,5 @@ func run() {
 	
 		time.Sleep(16 * time.Millisecond)
 	}
-	
 }
 
