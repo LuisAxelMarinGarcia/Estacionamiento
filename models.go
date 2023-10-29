@@ -30,6 +30,13 @@ type Car struct {
 	Position pixel.Vec
 	Lane     int
 	Parked   bool  // Nuevo campo para indicar si el carro está estacionado
+    ExitTime time.Time  // el momento en que el carro saldrá del estacionamiento
+}
+
+func setExitTime(car *Car) {
+    rand.Seed(time.Now().UnixNano())
+    exitIn := time.Duration(rand.Intn(10)+1) * time.Second  // por ejemplo, entre 1 y 10 segundos
+    car.ExitTime = time.Now().Add(exitIn)
 }
 
 
@@ -112,7 +119,9 @@ func car(id int) {
         carsMutex.Unlock()
         return
     }
-
+    if car.Parked {
+        setExitTime(&car)
+    }
     // Actualiza el carril del carro pero no la posición
     carsMutex.Lock()
     for i := range cars {

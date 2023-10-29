@@ -46,16 +46,15 @@ func run() {
 		drawParkingLot(win, GetCars())
 		win.Update()
 	
-	    carsMutex.Lock()
-    for i := range cars {
-        for j := range cars {
-            if i != j {  // Asegúrate de no comparar el carro consigo mismo
-                if checkCollision(cars[i].Position, cars[j].Position) {
-                    continue  // Si hay colisión, salta al siguiente ciclo del bucle
-                }
-            }
-        }
-
+		carsMutex.Lock()
+		for i := len(cars) - 1; i >= 0; i-- {
+			for j := range cars {
+				if i != j {  // Asegúrate de no comparar el carro consigo mismo
+					if checkCollision(cars[i].Position, cars[j].Position) {
+						continue  // Si hay colisión, salta al siguiente ciclo del bucle
+					}
+				}
+			}
 	
 			if cars[i].Position.X < 100 && cars[i].Lane == -1 {
 				cars[i].Position.X += 2  // Mueve más lentamente hacia la derecha
@@ -85,9 +84,18 @@ func run() {
 					cars[i].Position.X = targetX  // Ajusta la posición X a la posición objetivo
 					cars[i].Position.Y = targetY  // Ajusta la posición Y a la posición objetivo
 					cars[i].Parked = true  // Marca el carro como estacionado
+					setExitTime(&cars[i])  // Establece el tiempo de salida del carro
+				}
+			} else if cars[i].Parked && time.Now().After(cars[i].ExitTime) {
+				cars[i].Position.X -= 2  // mover el carro hacia la salida
+				if cars[i].Position.X <= 0 {
+					laneMutex.Lock()
+					laneStatus[cars[i].Lane] = false  // liberar el carril
+					laneMutex.Unlock()
+					// Remover el carro de la lista
+					cars = append(cars[:i], cars[i+1:]...)
 				}
 			}
-			// No mueve los carros que ya están estacionados
 		}
 		carsMutex.Unlock()
 	
