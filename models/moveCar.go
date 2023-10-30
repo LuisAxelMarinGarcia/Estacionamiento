@@ -2,6 +2,7 @@ package models
 
 import (
 	"time"
+	"log"
 )
 
 const (
@@ -54,21 +55,15 @@ func MoveCarsLogic() {
 					}
 				}
 			}
-			} else if Cars[i].Parked && time.Now().After(Cars[i].ExitTime) && AllParked {
-				if ExitIndex >= 0 && ExitIndex < len(Cars) && i == ExitIndex {
-					if Cars[i].Lane < 4 {
+			} else if Cars[i].Parked && time.Now().After(Cars[i].ExitTime) {
+				if Cars[i].Lane < 4 {
 					// Para carriles superiores
 					if Cars[i].Position.Y > 300 {
 						Cars[i].Position.Y -= 2  // Mueve hacia abajo
 					} else if Cars[i].Position.X > 0 {
 						Cars[i].Position.X -= 2  // Mueve hacia la izquierda
 					} else {
-						LaneMutex.Lock()
-						LaneStatus[Cars[i].Lane] = false  // liberar el carril
-						LaneMutex.Unlock()
-						// Remover el carro de la lista
-						Cars = append(Cars[:i], Cars[i+1:]...)
-						ExitIndex++  // Incrementa exitIndex cada vez que un carro sale.
+						RemoveCar(i)
 					}
 				} else {
 					// Para carriles inferiores
@@ -76,19 +71,18 @@ func MoveCarsLogic() {
 						Cars[i].Position.Y += 2  // Mueve hacia arriba
 					} else if Cars[i].Position.X > 0 {
 						Cars[i].Position.X -= 2  // Mueve hacia la izquierda
-						} else {
-							LaneMutex.Lock()
-							LaneStatus[Cars[i].Lane] = false  // liberar el carril
-							LaneMutex.Unlock()
-							// Remover el carro de la lista
-							Cars = append(Cars[:i], Cars[i+1:]...)
-							ExitIndex = 0  // Restablece ExitIndex a 0 cada vez que un carro sale
-						}
+					} else {
+						RemoveCar(i)
+					}
 				}
-
+			}
+		}
 	}
-}
-
-}
-
-}
+	
+	func RemoveCar(index int) {
+		LaneMutex.Lock()
+		defer LaneMutex.Unlock()
+		LaneStatus[Cars[index].Lane] = false  // liberar el carril
+		Cars = append(Cars[:index], Cars[index+1:]...)
+		log.Printf("Car removed. Cars Length: %v", len(Cars))
+	}
