@@ -36,7 +36,7 @@ func Run() {
 
 	
 			go models.Lane(i)
-			time.Sleep(time.Millisecond * time.Duration(rand.Intn(1000) + 1000))  // Espera más tiempo antes de lanzar el próximo carro
+			time.Sleep(time.Millisecond * time.Duration(rand.Intn(1000) + 1000))  
 		}
 	}()
 	

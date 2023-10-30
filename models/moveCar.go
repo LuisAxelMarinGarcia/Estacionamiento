@@ -9,7 +9,7 @@ const (
 	LaneWidth = 150.0
 )
 
-var AllParked bool  // false si alguno no está estacionado, true si todos están estacionados
+var AllParked bool 
 var ExitIndex int
 
 
@@ -18,71 +18,75 @@ func MoveCarsLogic() {
 	for i := len(Cars) - 1; i >= 0; i-- {
 
 		if Cars[i].Position.X < 100 && Cars[i].Lane == -1 {
-			Cars[i].Position.X += 2  // Mueve más lentamente hacia la derecha
-			if Cars[i].Position.X > 100 {  // Asegura que el carro se detenga en X=100
+			Cars[i].Position.X += 2
+			if Cars[i].Position.X > 100 { 
 				Cars[i].Position.X = 100
 			}
 		} else if Cars[i].Position.X == 100 && Cars[i].Lane == -1 {
-			// La lógica de entrada existente...
 		} else if Cars[i].Lane != -1 && !Cars[i].Parked {
 			var targetX, targetY float64
 			if Cars[i].Lane < 4 {
-				// Carriles superiores
 				targetX = 100.0 + float64(Cars[i].Lane)*LaneWidth + LaneWidth/2
-				targetY = 350 + (500-350)/2  // Centro vertical de los carriles superiores
+				targetY = 350 + (500-350)/2  
 			} else {
-				// Carriles inferiores
 				targetX = 100.0 + float64(Cars[i].Lane-4)*LaneWidth + LaneWidth/2
-				targetY = 100 + (250-100)/2  // Centro vertical de los carriles inferiores
+				targetY = 100 + (250-100)/2 
 			}
 			if Cars[i].Position.X < targetX - 2 {
-				Cars[i].Position.X += 2  // Mueve hacia la derecha
+				Cars[i].Position.X += 2  
 			} else if Cars[i].Position.Y < targetY - 2 && (targetX - Cars[i].Position.X) <= 2 {
-				Cars[i].Position.Y += 2  // Mueve hacia arriba
+				Cars[i].Position.Y += 2  
 			} else if Cars[i].Position.Y > targetY + 2 && (targetX - Cars[i].Position.X) <= 2 {
-				Cars[i].Position.Y -= 2  // Mueve hacia abajo
+				Cars[i].Position.Y -= 2 
 			} else if (targetX - Cars[i].Position.X) <= 2 && (targetY - Cars[i].Position.Y) <= 2 {
-				Cars[i].Position.X = targetX  // Ajusta la posición X a la posición objetivo
-				Cars[i].Position.Y = targetY  // Ajusta la posición Y a la posición objetivo
-				Cars[i].Parked = true  // Marca el carro como estacionado
-				SetExitTime(&Cars[i])  // Establece el tiempo de salida del carro
+				Cars[i].Position.X = targetX  
+				Cars[i].Position.Y = targetY  
+				Cars[i].Parked = true  
+				SetExitTime(&Cars[i])  
 
-				AllParked = true  // asume que todos están estacionados
+				AllParked = true  
 				for _, car := range Cars {
 					if !car.Parked {
-						AllParked = false  // Si encuentra un carro que no está estacionado, establece allParked a false
+						AllParked = false 
 						break
 					}
 				}
 			}
-			} else if Cars[i].Parked && time.Now().After(Cars[i].ExitTime) {
-				if Cars[i].Lane < 4 {
-					// Para carriles superiores
+			} else if Cars[i].Parked && time.Now().After(Cars[i].ExitTime) && AllParked {
+				if ExitIndex >= 0 && ExitIndex < len(Cars) && i == ExitIndex {
+					if Cars[i].Lane < 4 {
+					
 					if Cars[i].Position.Y > 300 {
-						Cars[i].Position.Y -= 2  // Mueve hacia abajo
+						Cars[i].Position.Y -= 2  
 					} else if Cars[i].Position.X > 0 {
-						Cars[i].Position.X -= 2  // Mueve hacia la izquierda
+						Cars[i].Position.X -= 2  
 					} else {
-						RemoveCar(i)
+						LaneMutex.Lock()
+						LaneStatus[Cars[i].Lane] = false  
+						LaneMutex.Unlock()
+						
+						Cars = append(Cars[:i], Cars[i+1:]...)
+						ExitIndex++ 
 					}
 				} else {
-					// Para carriles inferiores
 					if Cars[i].Position.Y < 300 {
-						Cars[i].Position.Y += 2  // Mueve hacia arriba
+						Cars[i].Position.Y += 2  
 					} else if Cars[i].Position.X > 0 {
-						Cars[i].Position.X -= 2  // Mueve hacia la izquierda
-					} else {
-						RemoveCar(i)
-					}
+						Cars[i].Position.X -= 2  
+						} else {
+							LaneMutex.Lock()
+							LaneStatus[Cars[i].Lane] = false  
+							LaneMutex.Unlock()
+							Cars = append(Cars[:i], Cars[i+1:]...)
+							ExitIndex = 0  
+							log.Printf("ExitIndex: %v, Cars Length: %v, Car Index: %v, Car Parked: %v, Car Exit Time: %v", ExitIndex, len(Cars), i, Cars[i].Parked, Cars[i].ExitTime)
+
+						}
 				}
-			}
-		}
+
 	}
-	
-	func RemoveCar(index int) {
-		LaneMutex.Lock()
-		defer LaneMutex.Unlock()
-		LaneStatus[Cars[index].Lane] = false  // liberar el carril
-		Cars = append(Cars[:index], Cars[index+1:]...)
-		log.Printf("Car removed. Cars Length: %v", len(Cars))
-	}
+}
+
+}
+
+} 

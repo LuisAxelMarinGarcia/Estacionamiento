@@ -13,11 +13,11 @@ const (
 
 
 var (
-	LaneStatus [numLanes]bool // false si está libre, true si está ocupado
+	LaneStatus [numLanes]bool 
 	Cars       []Car
 	CarsMutex  sync.Mutex
 	LaneMutex  sync.Mutex
-	Entrance   = make(chan bool, 1)  // canal para controlar el acceso a la entrada, ahora inicializado y con buffer
+	Entrance   = make(chan bool, 1)
 )
 
 
@@ -25,14 +25,14 @@ func Lane(id int) {
 	CarsMutex.Lock()
 	Car := Car{
 		ID:       id,
-		Position: pixel.V(0, 300),  // Posición inicial fuera de la ventana
+		Position: pixel.V(0, 300),  
 		Lane:     -1,
 		Parked:   false,
 	}
 	Cars = append(Cars, Car)
 	CarsMutex.Unlock()
 
-	// Espera a que el auto llegue a la entrada antes de asignar un carril
+	
 	for {
 		var carPos pixel.Vec
 		CarsMutex.Lock()
@@ -49,40 +49,36 @@ func Lane(id int) {
 		time.Sleep(16 * time.Millisecond)
 	}
 
-	// Espera hasta que la entrada esté libre
-	Entrance <- true  // Bloquea la entrada
 
-	// Busca un carril libre de manera aleatoria
+	Entrance <- true  
 	rand.Seed(time.Now().UnixNano())
-	lanes := rand.Perm(numLanes)  // Genera una permutación aleatoria de carriles
+	lanes := rand.Perm(numLanes) 
 	var lane int
-	foundLane := false  // Variable para verificar si encontró un carril
+	foundLane := false  
 	LaneMutex.Lock()
 	for _, l := range lanes {
 		if !LaneStatus[l] {
 			lane = l
-			LaneStatus[l] = true  // Ocupa el carril
-			foundLane = true  // Marca que encontró un carril
+			LaneStatus[l] = true  
+			foundLane = true 
 			break
 		}
 	}
 	LaneMutex.Unlock()
 
-	<-Entrance  // Libera la entrada para otro carro
-
-	// Si no encontró un carril, regresa a la posición inicial y sale
-	if !foundLane {  // Modificado para verificar la variable foundLane
+	<-Entrance  
+	if !foundLane { 
 		CarsMutex.Lock()
 		for i := range Cars {
 			if Cars[i].ID == id {
-				Cars[i].Position = pixel.V(0, 300)  // Posición inicial
+				Cars[i].Position = pixel.V(0, 300)  
 			}
 		}
 		CarsMutex.Unlock()
 		return
 	}
 
-	// Actualiza el carril del carro pero no la posición
+	
 	CarsMutex.Lock()
 	for i := range Cars {
 		if Cars[i].ID == id {
