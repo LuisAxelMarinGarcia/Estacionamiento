@@ -16,7 +16,6 @@ func MoveCarsLogic() {
 			if Cars[i].Position.X > 100 {
 				Cars[i].Position.X = 100
 			}
-		} else if Cars[i].Position.X == 100 && Cars[i].Lane == -1 {
 		} else if Cars[i].Lane != -1 && !Cars[i].Parked {
 			var targetX, targetY float64
 			laneWidth := 600.0 / 10 // Asumiendo que el ancho del estacionamiento es 600 y hay 10 conjuntos de carriles
@@ -47,40 +46,41 @@ func MoveCarsLogic() {
 					}
 				}
 			}
-			} else if Cars[i].Parked && time.Now().After(Cars[i].ExitTime) && AllParked {
-				if ExitIndex >= 0 && ExitIndex < len(Cars) && i == ExitIndex {
-					if Cars[i].Lane < 4 {
-					
-					if Cars[i].Position.Y > 300 {
-						Cars[i].Position.Y -= 2  
-					} else if Cars[i].Position.X > 0 {
-						Cars[i].Position.X -= 2  
-					} else {
-						LaneMutex.Lock()
-						LaneStatus[Cars[i].Lane] = false  
-						LaneMutex.Unlock()
-						
-						Cars = append(Cars[:i], Cars[i+1:]...)
-						ExitIndex++ 
-					}
-				} else {
-					if Cars[i].Position.Y < 300 {
-						Cars[i].Position.Y += 2  
-					} else if Cars[i].Position.X > 0 {
-						Cars[i].Position.X -= 2  
+			}
+			for i := len(Cars) - 1; i >= 0; i-- {
+				if Cars[i].Parked && time.Now().After(Cars[i].ExitTime) {
+					if ExitIndex >= 0 && ExitIndex < len(Cars) && i == ExitIndex {
+					if Cars[i].Lane < 10 {  // Cambiado de 4 a 10 para abarcar todos los carriles inferiores
+						if Cars[i].Position.Y > 300 {
+							Cars[i].Position.Y -= 1
+						} else if Cars[i].Position.X > 0 {
+							Cars[i].Position.X -= 1
 						} else {
 							LaneMutex.Lock()
-							LaneStatus[Cars[i].Lane] = false  
+							LaneStatus[Cars[i].Lane] = false
 							LaneMutex.Unlock()
+	
 							Cars = append(Cars[:i], Cars[i+1:]...)
-							ExitIndex = 0  
-
+							ExitIndex++
 						}
+					} else {
+						if Cars[i].Position.Y < 300 {  // Cambiado de 300 a 550 para asegurar que los autos en los carriles superiores salgan completamente del carril antes de moverse a la izquierda.
+							Cars[i].Position.Y += 1
+						} else if Cars[i].Position.X > 0 {
+							Cars[i].Position.X -= 1
+						} else {
+							LaneMutex.Lock()
+							LaneStatus[Cars[i].Lane] = false
+							LaneMutex.Unlock()
+	
+							Cars = append(Cars[:i], Cars[i+1:]...)
+							ExitIndex = 0
+						}
+					}
+					
 				}
-
+			}
+			
+		}
 	}
-}
-
-}
-
 }
