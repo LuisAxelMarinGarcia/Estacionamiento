@@ -3,8 +3,9 @@ package main
 
 import (
 	"github.com/faiface/pixel/pixelgl"
+	"carro/scenes"
 )
 
 func main() {
-	pixelgl.Run(run)
+	pixelgl.Run(scenes.Run)
 }

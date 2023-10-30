@@ -1,13 +1,18 @@
-package main
+package views
 
 import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
 	"golang.org/x/image/colornames"
+	"carro/models"
 )
 
-func drawParkingLot(win *pixelgl.Window, cars []Car) {
+const (
+	LaneWidth = 150.0
+)
+
+func DrawParkingLot(win *pixelgl.Window, cars []models.Car) {
 	imd := imdraw.New(nil)
 	imd.Color = colornames.Black
 
@@ -23,16 +28,16 @@ func drawParkingLot(win *pixelgl.Window, cars []Car) {
 
 	// Dibuja los carriles de estacionamiento
 	for i := 0.0; i < 4.0; i++ {
-		xOffset := 100.0 + i*laneWidth
+		xOffset := 100.0 + i*LaneWidth
 		// Carriles superiores
 		imd.Push(pixel.V(xOffset, 500), pixel.V(xOffset, 350))
 		imd.Line(2)  // Borde izquierdo del carril
-		imd.Push(pixel.V(xOffset + laneWidth, 500), pixel.V(xOffset + laneWidth, 350))
+		imd.Push(pixel.V(xOffset + LaneWidth, 500), pixel.V(xOffset + LaneWidth, 350))
 		imd.Line(2)  // Borde derecho del carril
 		// Carriles inferiores
 		imd.Push(pixel.V(xOffset, 250), pixel.V(xOffset, 100))
 		imd.Line(2)  // Borde izquierdo del carril
-		imd.Push(pixel.V(xOffset + laneWidth, 250), pixel.V(xOffset + laneWidth, 100))
+		imd.Push(pixel.V(xOffset + LaneWidth, 250), pixel.V(xOffset + LaneWidth, 100))
 		imd.Line(2)  // Borde derecho del carril
 	}
 
