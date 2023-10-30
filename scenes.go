@@ -25,7 +25,7 @@ func run() {
 	}
 
 	go func() {
-		for i := 1; i <= 10; i++ {
+		for i := 1; i <= 8; i++ {
 			laneMutex.Lock()
 			allLanesOccupied := true
 			for _, occupied := range laneStatus {

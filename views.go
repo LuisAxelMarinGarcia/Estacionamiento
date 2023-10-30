@@ -23,21 +23,25 @@ func drawParkingLot(win *pixelgl.Window, cars []Car) {
 
 	// Dibuja los carriles de estacionamiento
 	for i := 0.0; i < 4.0; i++ {
-		xOffset := 100.0 + i*(laneWidth)
+		xOffset := 100.0 + i*laneWidth
 		// Carriles superiores
-		imd.Push(pixel.V(xOffset, 500), pixel.V(xOffset+laneWidth, 350))
-		imd.Rectangle(2)
+		imd.Push(pixel.V(xOffset, 500), pixel.V(xOffset, 350))
+		imd.Line(2)  // Borde izquierdo del carril
+		imd.Push(pixel.V(xOffset + laneWidth, 500), pixel.V(xOffset + laneWidth, 350))
+		imd.Line(2)  // Borde derecho del carril
 		// Carriles inferiores
-		imd.Push(pixel.V(xOffset, 250), pixel.V(xOffset+laneWidth, 100))
+		imd.Push(pixel.V(xOffset, 250), pixel.V(xOffset, 100))
+		imd.Line(2)  // Borde izquierdo del carril
+		imd.Push(pixel.V(xOffset + laneWidth, 250), pixel.V(xOffset + laneWidth, 100))
+		imd.Line(2)  // Borde derecho del carril
+	}
+
+	for _, car := range cars {
+		imd.Color = colornames.Red
+		// Asegúrate de que el carro se dibuje centrado en su posición
+		imd.Push(car.Position.Add(pixel.V(-25, -25)), car.Position.Add(pixel.V(25, 25)))  // Asume que cada carro es un cuadrado de 50x50 pixels
 		imd.Rectangle(2)
 	}
 
-    for _, car := range cars {
-        imd.Color = colornames.Red
-        // Asegúrate de que el carro se dibuje centrado en su posición
-        imd.Push(car.Position.Add(pixel.V(-25, -25)), car.Position.Add(pixel.V(25, 25)))  // Asume que cada carro es un cuadrado de 50x50 pixels
-        imd.Rectangle(2)
-    }
-
-    imd.Draw(win)
+	imd.Draw(win)
 }
