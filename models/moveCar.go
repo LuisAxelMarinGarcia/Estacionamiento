@@ -2,12 +2,8 @@ package models
 
 import (
 	"time"
-	"log"
 )
 
-const (
-	LaneWidth = 150.0
-)
 
 var AllParked bool 
 var ExitIndex int
@@ -79,7 +75,6 @@ func MoveCarsLogic() {
 							LaneMutex.Unlock()
 							Cars = append(Cars[:i], Cars[i+1:]...)
 							ExitIndex = 0  
-							log.Printf("ExitIndex: %v, Cars Length: %v, Car Index: %v, Car Parked: %v, Car Exit Time: %v", ExitIndex, len(Cars), i, Cars[i].Parked, Cars[i].ExitTime)
 
 						}
 				}
@@ -89,4 +84,4 @@ func MoveCarsLogic() {
 
 }
 
-} 
+}

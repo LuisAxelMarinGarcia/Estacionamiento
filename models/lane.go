@@ -11,6 +11,9 @@ const (
 	numLanes  = 8
 )
 
+const (
+	LaneWidth = 150.0
+)
 
 var (
 	LaneStatus [numLanes]bool 
