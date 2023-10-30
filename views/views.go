@@ -8,7 +8,6 @@ import (
 	"carro/models"
 )
 
-
 func DrawParkingLot(win *pixelgl.Window, cars []models.Car) {
 	imd := imdraw.New(nil)
 	imd.Color = colornames.Black
@@ -21,23 +20,28 @@ func DrawParkingLot(win *pixelgl.Window, cars []models.Car) {
 	imd.Push(pixel.V(700, 100), pixel.V(700, 500))
 	imd.Line(2)
 
-	
-	for i := 0.0; i < 4.0; i++ {
-		xOffset := 100.0 + i*models.LaneWidth
+	parkingWidth := 600.0 // Ancho del estacionamiento (700 - 100)
+	laneWidth := parkingWidth / 10 // Ancho de cada conjunto de carriles (superior e inferior), asumiendo 10 conjuntos en total
+
+	for i := 0.0; i < 10.0; i++ {
+		xOffset := 100.0 + i*laneWidth // Ajusta el xOffset aquí
 		
+		// Solo dibuja una línea entre cada carril, en lugar de dos
+		// Carriles superiores
 		imd.Push(pixel.V(xOffset, 500), pixel.V(xOffset, 350))
 		imd.Line(2)  
-		imd.Push(pixel.V(xOffset + models.LaneWidth, 500), pixel.V(xOffset + models.LaneWidth, 350))
-		imd.Line(2)  
+
+		// Carriles inferiores
 		imd.Push(pixel.V(xOffset, 250), pixel.V(xOffset, 100))
-		imd.Line(2)  
-		imd.Push(pixel.V(xOffset + models.LaneWidth, 250), pixel.V(xOffset + models.LaneWidth, 100))
 		imd.Line(2)  
 	}
 
+	carWidth := laneWidth / 4  // Ajusta el ancho del carro aquí
+	carHeight := laneWidth / 4 // Ajusta la altura del carro aquí
+
 	for _, car := range cars {
 		imd.Color = colornames.Red
-		imd.Push(car.Position.Add(pixel.V(-25, -25)), car.Position.Add(pixel.V(25, 25))) 
+		imd.Push(car.Position.Add(pixel.V(-carWidth, -carHeight)), car.Position.Add(pixel.V(carWidth, carHeight))) 
 		imd.Rectangle(2)
 	}
 

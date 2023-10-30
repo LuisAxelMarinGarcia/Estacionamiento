@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	numLanes  = 8
+	numLanes  = 20
 )
 
 const (

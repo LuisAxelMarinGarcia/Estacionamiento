@@ -4,10 +4,8 @@ import (
 	"time"
 )
 
-
-var AllParked bool 
+var AllParked bool
 var ExitIndex int
-
 
 func MoveCarsLogic() {
 
@@ -15,18 +13,19 @@ func MoveCarsLogic() {
 
 		if Cars[i].Position.X < 100 && Cars[i].Lane == -1 {
 			Cars[i].Position.X += 2
-			if Cars[i].Position.X > 100 { 
+			if Cars[i].Position.X > 100 {
 				Cars[i].Position.X = 100
 			}
 		} else if Cars[i].Position.X == 100 && Cars[i].Lane == -1 {
 		} else if Cars[i].Lane != -1 && !Cars[i].Parked {
 			var targetX, targetY float64
-			if Cars[i].Lane < 4 {
-				targetX = 100.0 + float64(Cars[i].Lane)*LaneWidth + LaneWidth/2
-				targetY = 350 + (500-350)/2  
+			laneWidth := 600.0 / 10 // Asumiendo que el ancho del estacionamiento es 600 y hay 10 conjuntos de carriles
+			if Cars[i].Lane < 10 {
+				targetX = 100.0 + float64(Cars[i].Lane)*laneWidth + laneWidth/2
+				targetY = 350 + (500-350)/2
 			} else {
-				targetX = 100.0 + float64(Cars[i].Lane-4)*LaneWidth + LaneWidth/2
-				targetY = 100 + (250-100)/2 
+				targetX = 100.0 + float64(Cars[i].Lane-10)*laneWidth + laneWidth/2
+				targetY = 100 + (250-100)/2
 			}
 			if Cars[i].Position.X < targetX - 2 {
 				Cars[i].Position.X += 2  
