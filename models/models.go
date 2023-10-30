@@ -41,24 +41,6 @@ func GetCars() []Car {
 	return Cars
 }
 
-func CheckCollision(pos1, pos2 pixel.Vec) bool {
-	distance := pos1.Sub(pos2).Len()
-	return distance < 20.0  // Ajusta este valor según el tamaño de tus carros
-}
-
-func checkAllCollisions() {
-	CarsMutex.Lock()
-	defer CarsMutex.Unlock()
-
-	for i := 0; i < len(Cars); i++ {
-		for j := i + 1; j < len(Cars); j++ {
-			if CheckCollision(Cars[i].Position, Cars[j].Position) {
-				// Lógica para manejar la colisión (e.g., mover los autos, registrar el evento, etc.)
-			}
-		}
-	}
-}
-
 
 func Carr(id int) {
 	CarsMutex.Lock()

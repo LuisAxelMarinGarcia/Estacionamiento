@@ -8,9 +8,6 @@ import (
 	"carro/models"
 )
 
-const (
-	LaneWidth = 150.0
-)
 
 func DrawParkingLot(win *pixelgl.Window, cars []models.Car) {
 	imd := imdraw.New(nil)
@@ -28,16 +25,16 @@ func DrawParkingLot(win *pixelgl.Window, cars []models.Car) {
 
 	// Dibuja los carriles de estacionamiento
 	for i := 0.0; i < 4.0; i++ {
-		xOffset := 100.0 + i*LaneWidth
+		xOffset := 100.0 + i*models.LaneWidth
 		// Carriles superiores
 		imd.Push(pixel.V(xOffset, 500), pixel.V(xOffset, 350))
 		imd.Line(2)  // Borde izquierdo del carril
-		imd.Push(pixel.V(xOffset + LaneWidth, 500), pixel.V(xOffset + LaneWidth, 350))
+		imd.Push(pixel.V(xOffset + models.LaneWidth, 500), pixel.V(xOffset + models.LaneWidth, 350))
 		imd.Line(2)  // Borde derecho del carril
 		// Carriles inferiores
 		imd.Push(pixel.V(xOffset, 250), pixel.V(xOffset, 100))
 		imd.Line(2)  // Borde izquierdo del carril
-		imd.Push(pixel.V(xOffset + LaneWidth, 250), pixel.V(xOffset + LaneWidth, 100))
+		imd.Push(pixel.V(xOffset + models.LaneWidth, 250), pixel.V(xOffset + models.LaneWidth, 100))
 		imd.Line(2)  // Borde derecho del carril
 	}
 
