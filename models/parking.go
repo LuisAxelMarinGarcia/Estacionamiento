@@ -58,9 +58,6 @@ func ExitCarLogic() {
 }
 
 
-
-
-
 func updateLaneStatus(lane int, status bool) {
 	LaneMutex.Lock()
 	defer LaneMutex.Unlock()

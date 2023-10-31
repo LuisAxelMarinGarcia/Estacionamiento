@@ -33,9 +33,7 @@ func FindAvailableLane() (int, bool) {
 func Lane(id int) {
     CreateCar(id)
     WaitForPosition(id, 100)
-    Entrance <- true
     lane, foundLane := FindAvailableLane()
-    <-Entrance
     if !foundLane {
         ResetCarPosition(id)
         return
