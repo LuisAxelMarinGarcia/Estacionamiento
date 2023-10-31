@@ -5,7 +5,6 @@ import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"golang.org/x/image/colornames"
-	"math/rand"
 	"carro/models"
 	"carro/views"
 )
@@ -13,6 +12,8 @@ import (
 
 
 func Run() {
+
+	models.Init()
 
 	win, err := pixelgl.NewWindow(pixelgl.WindowConfig{
 		Title:  "Parking Lot Simulation",
@@ -23,8 +24,7 @@ func Run() {
 	}
 
 	go func() {
-		i := 1  
-		for {   
+		for car := range models.CarChannel {
 			models.LaneMutex.Lock()
 			for _, occupied := range models.LaneStatus {
 				if !occupied {
@@ -32,13 +32,10 @@ func Run() {
 				}
 			}
 			models.LaneMutex.Unlock()
-	
-			go models.Lane(i)
-			i++  
-			time.Sleep(time.Millisecond * time.Duration(rand.Intn(500) + 500))
+
+			go models.Lane(car.ID) 
 		}
 	}()
-	
 	
 	
 	for !win.Closed() {

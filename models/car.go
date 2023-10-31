@@ -17,6 +17,14 @@ type Car struct {
     Teleporting        bool
     TeleportStartTime  time.Time
 }
+
+var CarChannel chan Car
+
+func Init() {
+	CarChannel = make(chan Car)
+	go CarGenerator()
+}
+
 func CreateCar(id int) Car {
     CarsMutex.Lock()
     defer CarsMutex.Unlock()
@@ -83,4 +91,14 @@ func ParkCar(car *Car, targetX, targetY float64) {
 
 func removeCar(index int) {
 	Cars = append(Cars[:index], Cars[index+1:]...)
+}
+
+func CarGenerator() {
+	id := 0
+	for {
+		id++
+		car := CreateCar(id)
+		CarChannel <- car
+		time.Sleep(time.Millisecond * time.Duration(rand.Intn(500)+500))  
+	}
 }
