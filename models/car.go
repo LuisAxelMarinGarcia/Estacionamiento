@@ -14,8 +14,9 @@ type Car struct {
 	Parked       bool
 	ExitTime     time.Time
 	IsEntering bool 
+    Teleporting        bool
+    TeleportStartTime  time.Time
 }
-
 func CreateCar(id int) Car {
     CarsMutex.Lock()
     defer CarsMutex.Unlock()
@@ -32,7 +33,7 @@ func CreateCar(id int) Car {
 
 func SetExitTime(car *Car) {
     rand.Seed(time.Now().UnixNano())
-    exitIn := time.Duration(rand.Intn(1)+1) * time.Second  
+    exitIn := time.Duration(rand.Intn(5)+1) * time.Second  
     car.ExitTime = time.Now().Add(exitIn)
 }
 
@@ -73,19 +74,12 @@ func FindCarPosition(id int) pixel.Vec {
 }
 
 func ParkCar(car *Car, targetX, targetY float64) {
-	if car.Position.X < targetX - 2 {
-		car.Position.X += 2  
-	} else if car.Position.Y < targetY - 2 && (targetX - car.Position.X) <= 2 {
-		car.Position.Y += 2  
-	} else if car.Position.Y > targetY + 2 && (targetX - car.Position.X) <= 2 {
-		car.Position.Y -= 2 
-	} else if (targetX - car.Position.X) <= 2 && (targetY - car.Position.Y) <= 2 {
-		car.Position.X = targetX  
-		car.Position.Y = targetY  
-		car.Parked = true  
-		SetExitTime(car)  
-	}
+	car.Position.X = targetX
+	car.Position.Y = targetY
+	car.Parked = true
+	SetExitTime(car)
 }
+
 
 func removeCar(index int) {
 	Cars = append(Cars[:index], Cars[index+1:]...)

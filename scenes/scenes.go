@@ -13,7 +13,6 @@ import (
 
 
 func Run() {
-	models.ExitIndex = 0
 
 	win, err := pixelgl.NewWindow(pixelgl.WindowConfig{
 		Title:  "Parking Lot Simulation",
@@ -36,7 +35,7 @@ func Run() {
 	
 			go models.Lane(i)
 			i++  
-			time.Sleep(time.Millisecond * time.Duration(rand.Intn(1000) + 1000))
+			time.Sleep(time.Millisecond * time.Duration(rand.Intn(500) + 500))
 		}
 	}()
 	

@@ -17,9 +17,9 @@ var (
 	CarsMutex  sync.Mutex
 	LaneMutex  sync.Mutex
 	Entrance   = make(chan bool, 1)
-	AllParked bool
-	ExitIndex int
 	CarEnteringOrExiting bool  
 	ControlMutex sync.Mutex  
 )
 
+var LastExitPositionY float64 = 350 
+var ExitPositions = make(chan float64, 10)
