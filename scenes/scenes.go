@@ -24,7 +24,8 @@ func Run() {
 	}
 
 	go func() {
-		for i := 1; i <=100; i++ {
+		i := 1  
+		for {   
 			models.LaneMutex.Lock()
 			for _, occupied := range models.LaneStatus {
 				if !occupied {
@@ -32,13 +33,13 @@ func Run() {
 				}
 			}
 			models.LaneMutex.Unlock()
-			
-
 	
 			go models.Lane(i)
-			time.Sleep(time.Millisecond * time.Duration(rand.Intn(1000) + 1000))  
+			i++  
+			time.Sleep(time.Millisecond * time.Duration(rand.Intn(1000) + 1000))
 		}
 	}()
+	
 	
 	
 	for !win.Closed() {
