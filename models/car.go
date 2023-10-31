@@ -19,7 +19,7 @@ type Car struct {
 
 func SetExitTime(car *Car) {
     rand.Seed(time.Now().UnixNano())
-    exitIn := time.Duration(rand.Intn(5)+1) * time.Second  
+    exitIn := time.Duration(rand.Intn(1)+1) * time.Second  
     car.ExitTime = time.Now().Add(exitIn)
 }
 

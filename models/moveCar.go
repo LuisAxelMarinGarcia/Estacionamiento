@@ -68,9 +68,9 @@ func ExitCarLogic() {
 			if ExitIndex >= 0 && ExitIndex < len(Cars) && i == ExitIndex {
 				if Cars[i].Lane < 10 {
 					if Cars[i].Position.Y > 300 {
-						Cars[i].Position.Y -= 6 
+						Cars[i].Position.Y -= 5 
 					} else if Cars[i].Position.X > 0 {
-						Cars[i].Position.X -= 6 
+						Cars[i].Position.X -= 5  
 					} else {
 						updateLaneStatus(Cars[i].Lane, false)
 						removeCar(i)
@@ -78,9 +78,9 @@ func ExitCarLogic() {
 					}
 				} else {
 					if Cars[i].Position.Y < 300 {
-						Cars[i].Position.Y += 6 
+						Cars[i].Position.Y += 9 
 					} else if Cars[i].Position.X > 0 {
-						Cars[i].Position.X -= 6 
+						Cars[i].Position.X -= 9
 					} else {
 						updateLaneStatus(Cars[i].Lane, false)
 						removeCar(i)
@@ -91,7 +91,6 @@ func ExitCarLogic() {
 		}
 	}
 }
-
 
 
 
