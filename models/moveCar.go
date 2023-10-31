@@ -7,20 +7,18 @@ import (
 
 var AllParked bool
 var ExitIndex int
-var CarEnteringOrExiting bool  // false: ningún auto entrando o saliendo; true: un auto entrando o saliendo
-var ControlMutex sync.Mutex  // Mutex para controlar el acceso concurrente a CarEnteringOrExiting
+var CarEnteringOrExiting bool  
+var ControlMutex sync.Mutex  
 
 func MoveCarsLogic() {
 	for i := len(Cars) - 1; i >= 0; i-- {
-		// Lógica para mover los autos hacia su posición de estacionamiento
 		if Cars[i].Position.X < 100 && Cars[i].Lane == -1 && !Cars[i].IsEntering {
 			Cars[i].Position.X += 2
 			if Cars[i].Position.X > 100 {
 				Cars[i].Position.X = 100
 			}
 		} else if Cars[i].Lane != -1 && !Cars[i].Parked {
-			if !Cars[i].IsEntering { // Verifica si el carro no está en proceso de entrar
-				// Llamada a la función ParkCar para manejar la lógica de estacionamiento
+			if !Cars[i].IsEntering { 
 				var targetX, targetY float64
 				laneWidth := 600.0 / 10
 				if Cars[i].Lane < 10 {
@@ -35,7 +33,6 @@ func MoveCarsLogic() {
 		}
 	}
 
-	// Llamada a la función ExitCarLogic para manejar la lógica de salida
 	ExitCarLogic()
 }
 
@@ -55,10 +52,10 @@ func ParkCar(car *Car, targetX, targetY float64) {
 }
 
 func CheckAllParked() bool {
-	allParked := true  // asumir que todos los autos están estacionados
+	allParked := true  
 	for _, car := range Cars {
 		if !car.Parked {
-			allParked = false  // si algún auto no está estacionado, actualizar la variable
+			allParked = false  
 			break
 		}
 	}
@@ -69,23 +66,21 @@ func ExitCarLogic() {
 	for i := len(Cars) - 1; i >= 0; i-- {
 		if Cars[i].Parked && time.Now().After(Cars[i].ExitTime) && !Cars[i].IsEntering {
 			if ExitIndex >= 0 && ExitIndex < len(Cars) && i == ExitIndex {
-				// Lógica de salida para los carriles inferiores
 				if Cars[i].Lane < 10 {
 					if Cars[i].Position.Y > 300 {
-						Cars[i].Position.Y -= 6 // Aumenta la velocidad de salida
+						Cars[i].Position.Y -= 6 
 					} else if Cars[i].Position.X > 0 {
-						Cars[i].Position.X -= 6 // Aumenta la velocidad de salida
+						Cars[i].Position.X -= 6 
 					} else {
 						updateLaneStatus(Cars[i].Lane, false)
 						removeCar(i)
 						ExitIndex++
 					}
 				} else {
-					// Lógica de salida para los carriles superiores
 					if Cars[i].Position.Y < 300 {
-						Cars[i].Position.Y += 6 // Aumenta la velocidad de salida
+						Cars[i].Position.Y += 6 
 					} else if Cars[i].Position.X > 0 {
-						Cars[i].Position.X -= 6 // Aumenta la velocidad de salida
+						Cars[i].Position.X -= 6 
 					} else {
 						updateLaneStatus(Cars[i].Lane, false)
 						removeCar(i)

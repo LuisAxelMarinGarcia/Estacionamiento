@@ -20,24 +20,20 @@
 		imd.Push(pixel.V(700, 100), pixel.V(700, 500))
 		imd.Line(2)
 
-		parkingWidth := 600.0 // Ancho del estacionamiento (700 - 100)
-		laneWidth := parkingWidth / 10 // Ancho de cada conjunto de carriles (superior e inferior), asumiendo 10 conjuntos en total
+		parkingWidth := 600.0 
+		laneWidth := parkingWidth / 10 
 
 		for i := 0.0; i < 10.0; i++ {
-			xOffset := 100.0 + i*laneWidth // Ajusta el xOffset aquí
-			
-			// Solo dibuja una línea entre cada carril, en lugar de dos
-			// Carriles superiores
+			xOffset := 100.0 + i*laneWidth 
 			imd.Push(pixel.V(xOffset, 500), pixel.V(xOffset, 350))
 			imd.Line(2)  
 
-			// Carriles inferiores
 			imd.Push(pixel.V(xOffset, 250), pixel.V(xOffset, 100))
 			imd.Line(2)  
 		}
 
-		carWidth := laneWidth / 4  // Ajusta el ancho del carro aquí
-		carHeight := laneWidth / 4 // Ajusta la altura del carro aquí
+		carWidth := laneWidth / 4  
+		carHeight := laneWidth / 4 
 
 		for _, car := range cars {
 			imd.Color = colornames.Red
