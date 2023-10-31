@@ -24,7 +24,7 @@ func Run() {
 	}
 
 	go func() {
-		for i := 1; i <= 20; i++ {
+		for i := 1; i <=100; i++ {
 			models.LaneMutex.Lock()
 			for _, occupied := range models.LaneStatus {
 				if !occupied {
