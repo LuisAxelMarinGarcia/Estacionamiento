@@ -24,69 +24,83 @@ var (
 )
 
 
+func CreateCar(id int) Car {
+    CarsMutex.Lock()
+    defer CarsMutex.Unlock()
+    Car := Car{
+        ID:       id,
+        Position: pixel.V(0, 300),
+        Lane:     -1,
+        Parked:   false,
+    }
+    Cars = append(Cars, Car)
+    return Car
+}
+
+func FindCarPosition(id int) pixel.Vec {
+    CarsMutex.Lock()
+    defer CarsMutex.Unlock()
+    for _, car := range Cars {
+        if car.ID == id {
+            return car.Position
+        }
+    }
+    return pixel.Vec{}
+}
+
+func WaitForPosition(id int, targetX float64) {
+    for {
+        carPos := FindCarPosition(id)
+        if carPos.X >= targetX {
+            break
+        }
+        time.Sleep(16 * time.Millisecond)
+    }
+}
+
+func FindAvailableLane() (int, bool) {
+    LaneMutex.Lock()
+    defer LaneMutex.Unlock()
+    rand.Seed(time.Now().UnixNano())
+    lanes := rand.Perm(numLanes)
+    for _, l := range lanes {
+        if !LaneStatus[l] {
+            LaneStatus[l] = true
+            return l, true
+        }
+    }
+    return -1, false
+}
+
+func ResetCarPosition(id int) {
+    CarsMutex.Lock()
+    defer CarsMutex.Unlock()
+    for i := range Cars {
+        if Cars[i].ID == id {
+            Cars[i].Position = pixel.V(0, 300)
+        }
+    }
+}
+
+func AssignLaneToCar(id int, lane int) {
+    CarsMutex.Lock()
+    defer CarsMutex.Unlock()
+    for i := range Cars {
+        if Cars[i].ID == id {
+            Cars[i].Lane = lane
+        }
+    }
+}
+
 func Lane(id int) {
-	CarsMutex.Lock()
-	Car := Car{
-		ID:       id,
-		Position: pixel.V(0, 300),  
-		Lane:     -1,
-		Parked:   false,
-	}
-	Cars = append(Cars, Car)
-	CarsMutex.Unlock()
-
-	
-	for {
-		var carPos pixel.Vec
-		CarsMutex.Lock()
-		for _, car := range Cars {
-			if car.ID == id {
-				carPos = car.Position
-				break
-			}
-		}
-		CarsMutex.Unlock()
-		if carPos.X >= 100 {
-			break
-		}
-		time.Sleep(16 * time.Millisecond)
-	}
-
-
-	Entrance <- true  
-	rand.Seed(time.Now().UnixNano())
-	lanes := rand.Perm(numLanes) 
-	var lane int
-	foundLane := false  
-	LaneMutex.Lock()
-	for _, l := range lanes {
-		if !LaneStatus[l] {
-			lane = l
-			LaneStatus[l] = true  
-			foundLane = true 
-			break
-		}
-	}
-	LaneMutex.Unlock()
-
-	<-Entrance  
-	if !foundLane { 
-		CarsMutex.Lock()
-		for i := range Cars {
-			if Cars[i].ID == id {
-				Cars[i].Position = pixel.V(0, 300)  
-			}
-		}
-		CarsMutex.Unlock()
-		return
-	}
-
-	
-	CarsMutex.Lock()
-	for i := range Cars {
-		if Cars[i].ID == id {
-			Cars[i].Lane = lane
-		}
-	}
-	CarsMutex.Unlock()
+    CreateCar(id)
+    WaitForPosition(id, 100)
+    Entrance <- true
+    lane, foundLane := FindAvailableLane()
+    <-Entrance
+    if !foundLane {
+        ResetCarPosition(id)
+        return
+    }
+    AssignLaneToCar(id, lane)
 }
