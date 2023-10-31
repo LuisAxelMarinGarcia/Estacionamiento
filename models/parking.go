@@ -2,13 +2,7 @@ package models
 
 import (
 	"time"
-	"sync"
 )
-
-var AllParked bool
-var ExitIndex int
-var CarEnteringOrExiting bool  
-var ControlMutex sync.Mutex  
 
 func MoveCarsLogic() {
 	for i := len(Cars) - 1; i >= 0; i-- {
@@ -36,20 +30,7 @@ func MoveCarsLogic() {
 	ExitCarLogic()
 }
 
-func ParkCar(car *Car, targetX, targetY float64) {
-	if car.Position.X < targetX - 2 {
-		car.Position.X += 2  
-	} else if car.Position.Y < targetY - 2 && (targetX - car.Position.X) <= 2 {
-		car.Position.Y += 2  
-	} else if car.Position.Y > targetY + 2 && (targetX - car.Position.X) <= 2 {
-		car.Position.Y -= 2 
-	} else if (targetX - car.Position.X) <= 2 && (targetY - car.Position.Y) <= 2 {
-		car.Position.X = targetX  
-		car.Position.Y = targetY  
-		car.Parked = true  
-		SetExitTime(car)  
-	}
-}
+
 
 func CheckAllParked() bool {
 	allParked := true  
@@ -100,6 +81,3 @@ func updateLaneStatus(lane int, status bool) {
 	LaneStatus[lane] = status
 }
 
-func removeCar(index int) {
-	Cars = append(Cars[:index], Cars[index+1:]...)
-}

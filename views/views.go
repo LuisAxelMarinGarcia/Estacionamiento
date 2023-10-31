@@ -7,7 +7,7 @@
 		"golang.org/x/image/colornames"
 		"carro/models"
 		"image"
-		_ "image/png" // Importa el paquete image/png para poder cargar archivos PNG
+		_ "image/png"
 		"os"
 	)
 
@@ -17,7 +17,7 @@
 	)
 	
 	func loadBackground() {
-		file, err := os.Open("Assets/background.png") // Reemplaza "background.png" con la ruta a tu imagen
+		file, err := os.Open("Assets/background.png")
 		if err != nil {
 			panic(err)
 		}
@@ -33,7 +33,7 @@
 	}
 	
 	func DrawParkingLot(win *pixelgl.Window, cars []models.Car) {
-		if background == nil { // Si el fondo no ha sido cargado, cargarlo
+		if background == nil {
 			loadBackground()
 		}
 	
@@ -72,7 +72,6 @@
 			bottomLeft := car.Position.Add(pixel.V(-carWidth, carHeight))
 			bottomRight := car.Position.Add(pixel.V(carWidth, carHeight))
 	
-			// Dibuja el rectángulo relleno
 			imd.Push(topLeft, topRight, bottomRight, bottomLeft)
 			imd.Polygon(0)
 		}
