@@ -6,11 +6,40 @@
 		"github.com/faiface/pixel/pixelgl"
 		"golang.org/x/image/colornames"
 		"carro/models"
+		"image"
+		_ "image/png" // Importa el paquete image/png para poder cargar archivos PNG
+		"os"
 	)
 
+	var (
+		background *pixel.Sprite
+		bgPicture  pixel.Picture
+	)
+	
+	func loadBackground() {
+		file, err := os.Open("Assets/background.png") // Reemplaza "background.png" con la ruta a tu imagen
+		if err != nil {
+			panic(err)
+		}
+		defer file.Close()
+	
+		img, _, err := image.Decode(file)
+		if err != nil {
+			panic(err)
+		}
+	
+		bgPicture = pixel.PictureDataFromImage(img)
+		background = pixel.NewSprite(bgPicture, bgPicture.Bounds())
+	}
+	
 	func DrawParkingLot(win *pixelgl.Window, cars []models.Car) {
+		if background == nil { // Si el fondo no ha sido cargado, cargarlo
+			loadBackground()
+		}
+	
+		background.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
 		imd := imdraw.New(nil)
-		imd.Color = colornames.Black
+		imd.Color = colornames.White
 
 		imd.Push(pixel.V(100, 500), pixel.V(700, 500))
 		imd.Line(2)
@@ -37,9 +66,16 @@
 
 		for _, car := range cars {
 			imd.Color = colornames.Red
-			imd.Push(car.Position.Add(pixel.V(-carWidth, -carHeight)), car.Position.Add(pixel.V(carWidth, carHeight))) 
-			imd.Rectangle(2)
+	
+			topLeft := car.Position.Add(pixel.V(-carWidth, -carHeight))
+			topRight := car.Position.Add(pixel.V(carWidth, -carHeight))
+			bottomLeft := car.Position.Add(pixel.V(-carWidth, carHeight))
+			bottomRight := car.Position.Add(pixel.V(carWidth, carHeight))
+	
+			// Dibuja el rectángulo relleno
+			imd.Push(topLeft, topRight, bottomRight, bottomLeft)
+			imd.Polygon(0)
 		}
-
+	
 		imd.Draw(win)
 	}
